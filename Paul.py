@@ -8,15 +8,16 @@ from sendgrid.helpers.mail import *
 
 TERM = '2019-03'
 WEBSOC = 'https://www.reg.uci.edu/perl/WebSoc?'
-BATCH_SIZE = 20
+BATCH_SIZE = 25
 
 sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 from_email = Email("AntAlmanac@gmail.com")
 
-mongo_uri = os.environ.get('MONGODB_URI')
-db = pymongo.MongoClient(mongo_uri).get_default_database()
-q = {int(course['code']):course['addrs'] for course in db.queue.find()}
-names = {int(course['code']):course['name'] for course in db.queue.find()}
+db = pymongo.MongoClient(os.environ.get('MONGODB_URI')).get_default_database()
+q, names = {}, {}
+for course in db.queue.find():
+    q[int(course['code'])] = course['addrs']
+    names[int(course['code'])] = course['name']
 statuses = {code:None for code in q.keys()} #is statuses even a word in english? | initialize status values
 
 iter = q.keys().__iter__()
@@ -31,7 +32,6 @@ for i in range(len(q)//BATCH_SIZE + 1):
     # get status values for these codes
     fields = [('YearTerm',TERM),('CourseCodes',', '.join(codes)),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')]
     url = WEBSOC + urllib.parse.urlencode(fields)
-    print(url)
     sp = bs.BeautifulSoup(urllib.request.urlopen(url), 'lxml')
 
     for row in sp.find_all('tr'):
@@ -39,20 +39,20 @@ for i in range(len(q)//BATCH_SIZE + 1):
         if len(cells) > 15 and int(cells[0].text) in statuses:
             code = int(cells[0].text)
             statuses[code] = cells[-1].text
-            names[code] = name
 
 for code, status in statuses.items():
     course_url = WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',str(code)),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')])
     if status is None:
         msg = '<html><p>It seems that {} with code, {} ({}), has been cancelled!</p>'.format(names[code], code, course_url)
     elif status == 'FULL' or status == 'NewOnly':
-        continue
+        continue #keep waiting
     else:
         if status == 'Waitl':
             msg = '<html><p>Space just opened up on the waitlist for {} with code, {} ({}).</p>'.format(names[code], code, course_url)
         if status == 'OPEN':
             msg = '<html><p>Space just opened up in {} with code, {} ({}).</p>'.format(names[code], code, course_url)
 
+    ##send notifications
     for house in q[code]:
         to_email = Email(house)
         subject = "[AntAlmanac Notifications] Space Just Opened Up to Enroll"
@@ -60,3 +60,5 @@ for code, status in statuses.items():
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
         print(code, 'Done')
+
+    q.delete_one({"code": str(code)})
