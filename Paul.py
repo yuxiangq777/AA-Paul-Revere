@@ -61,4 +61,4 @@ for code, status in statuses.items():
         response = sg.client.mail.send.post(request_body=mail.get())
         print(code, 'Done')
 
-    q.delete_one({"code": str(code)})
+    db.queue.delete_one({"code": str(code)})
