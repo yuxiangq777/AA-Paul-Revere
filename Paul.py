@@ -56,7 +56,7 @@ for code, status in statuses.items():
     for house in q[code]:
         to_email = Email(house)
         subject = "[AntAlmanac Notifications] Space Just Opened Up to Enroll"
-        content = Content("text/html", msg+'<p>You have been removed from this watchlist; to add yourself again, please visit <a href="https://antalmanac.com" target="_blank">AntAlmanac</a> or click on <a href="http://mediaont.herokuapp.com/{}/{}" target="_blank">this link</a></p><p>Yours sincerely,</p><p>Poor Peter\'s AntAlmanac</p></html>'.format(code, house))
+        content = Content("text/html", msg+'<p>You have been removed from this watchlist; to add yourself again, please visit <a href="https://antalmanac.com" target="_blank">AntAlmanac</a> or click on <a href="http://mediaont.herokuapp.com/{}/{}/{}" target="_blank">this link</a></p><p>Yours sincerely,</p><p>Poor Peter\'s AntAlmanac</p></html>'.format(code, names[code], house))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
         print(code, 'Done')
