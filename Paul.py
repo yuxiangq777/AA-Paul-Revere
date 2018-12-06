@@ -19,30 +19,41 @@ q, names = {}, {}
 for course in db.queue.find():
     q[course['code']] = course['addrs']
     names[course['code']] = course['name']
-statuses = {code:None for code in q.keys()} #is statuses even a word in english? | initialize status values
 
-iter = q.keys().__iter__()
-for i in range(len(q)//BATCH_SIZE + 1):
-    codes = set()
-    for _ in range(BATCH_SIZE):
-        try:
-            codes.add(next(iter))
-        except: #Expecting a StopIteration
-            break
+def fetch_statuses(targets):
+    statuses = {code:None for code in targets} #is statuses even a word in english? | initialize status values
 
-    # get status values for these codes
-    fields = [('YearTerm',TERM),('CourseCodes',', '.join(codes)),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')]
-    url = WEBSOC + urllib.parse.urlencode(fields)
-    print(url)
-    sp = bs.BeautifulSoup(urllib.request.urlopen(url), 'lxml')
+    iter = targets.__iter__()
+    for i in range(len(q)//BATCH_SIZE + 1):
+        codes = set()
+        for _ in range(BATCH_SIZE):
+            try:
+                codes.add(next(iter))
+            except: #Expecting a StopIteration
+                break
 
-    for row in sp.find_all('tr'):
-        cells = row.find_all('td')
-        if len(cells) > 15 and cells[0].text in statuses:
-            code = cells[0].text
-            statuses[code] = cells[-1].text
+        # get status values for these codes
+        fields = [('YearTerm',TERM),('CourseCodes',', '.join(codes)),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')]
+        url = WEBSOC + urllib.parse.urlencode(fields)
+        print(url)
+        sp = bs.BeautifulSoup(urllib.request.urlopen(url), 'lxml')
 
+        for row in sp.find_all('tr'):
+            cells = row.find_all('td')
+            if len(cells) > 15 and cells[0].text in statuses:
+                code = cells[0].text
+                statuses[code] = cells[-1].text
+
+    return statuses
+
+statuses = fetch_statuses(q.keys())
 print(statuses)
+double_check = fetch_statuses(code for code, status in statuses.items() if status != 'FULL')
+print(double_check)
+for code, status in double_check.items():
+    if status != statuses[code]: ## If the two samples disagree, then we say it's FULL
+        statuses[code] = 'FULL'
+print(double_check)
 
 for code, status in statuses.items():
     course_url = WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',code),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')])
