@@ -24,7 +24,7 @@ def fetch_statuses(targets):
     statuses = {code:None for code in targets} #is statuses even a word in english? | initialize status values
 
     iter = targets.__iter__()
-    for i in range(len(q)//BATCH_SIZE + 1):
+    for i in range(len(targets)//BATCH_SIZE + 1):
         codes = set()
         for _ in range(BATCH_SIZE):
             try:
@@ -48,7 +48,7 @@ def fetch_statuses(targets):
 
 statuses = fetch_statuses(q.keys())
 print(statuses)
-double_check = fetch_statuses(code for code, status in statuses.items() if status != 'FULL')
+double_check = fetch_statuses([code for code, status in statuses.items() if status != 'FULL'])
 print(double_check)
 for code, status in double_check.items():
     if status != statuses[code]: ## If the two samples disagree, then we say it's FULL
