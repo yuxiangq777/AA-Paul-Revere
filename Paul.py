@@ -12,6 +12,7 @@ BATCH_SIZE = 8
 
 sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 from_email = Email("AntAlmanac@gmail.com")
+qa_email = Email(os.environ.get('QA_EMAIL'))
 
 db = pymongo.MongoClient(os.environ.get('MONGODB_URI')).get_default_database()
 q, names = {}, {}
@@ -62,6 +63,8 @@ for code, status in statuses.items():
         content = Content("text/html", msg+'<p>You have been removed from this watchlist; to add yourself again, please visit <a href="https://antalmanac.com" target="_blank">AntAlmanac</a> or click on <a href="http://mediaont.herokuapp.com/{}/{}/{}" target="_blank">this link</a></p><p>Also, was this notification correct? Were you able to add yourself? Please do let us know asap if there is anything that isn\'t working as it should be!!!<a href="https://goo.gl/forms/U8CuPs05DlIbrSfz2" target="_blank">Give (anonymous) feedback!</a></p><p>Yours sincerely,</p><p>Poor Peter\'s AntAlmanac</p></html>'.format(code, names[code], house))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
+        mail = Mail(from_email, subject, qa_email, content) #For quality assurance purposes
+        response = sg.client.mail.send.post(request_body=mail.get()) #For quality assurance
         print(code, 'Done')
 
     db.queue.delete_one({"code": str(code)})
