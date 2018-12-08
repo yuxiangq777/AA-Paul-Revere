@@ -63,7 +63,7 @@ for code, status in statuses.items():
         continue #keep waiting
     else:
         if status == 'Waitl':
-            msg = '<html><p>Space just opened up on the waitlist for {} with code, {} ({}).</p>'.format(names[code], code, course_url)
+            msg = '<html><p>Space just opened up <strong>on the waitlist</strong> for {} with code, {} ({}).</p>'.format(names[code], code, course_url)
         if status == 'OPEN':
             msg = '<html><p>Space just opened up in {} with code, {} ({}).</p>'.format(names[code], code, course_url)
 
@@ -71,7 +71,7 @@ for code, status in statuses.items():
     for house in q[code]:
         to_email = Email(house)
         subject = "[AntAlmanac Notifications] Space Just Opened Up to Enroll"
-        content = Content("text/html", msg+'<p>You have been removed from this watchlist; to add yourself again, please visit <a href="https://antalmanac.com" target="_blank">AntAlmanac</a> or click on <a href="http://mediaont.herokuapp.com/{}/{}/{}" target="_blank">this link</a></p><p>Also, was this notification correct? Were you able to add yourself? Please do let us know asap if there is anything that isn\'t working as it should be!!!<a href="https://goo.gl/forms/U8CuPs05DlIbrSfz2" target="_blank">Give (anonymous) feedback!</a></p><p>Yours sincerely,</p><p>Poor Peter\'s AntAlmanac</p></html>'.format(code, names[code], house))
+        content = Content("text/html", msg+'<p>Here\'s WebReg while we\'re at it: <a href="https://www.reg.uci.edu/registrar/soc/webreg.html" target="_blank">WebReg</a></p><p>You have been removed from this watchlist; to add yourself again, please visit <a href="https://antalmanac.com" target="_blank">AntAlmanac</a> or click on <a href="http://mediaont.herokuapp.com/{}/{}/{}" target="_blank">this link</a></p><p>Also, was this notification correct? Were you able to add yourself? Please do let us know asap if there is anything that isn\'t working as it should be!!! <a href="https://goo.gl/forms/U8CuPs05DlIbrSfz2" target="_blank">Give (anonymous) feedback!</a></p><p>Yours sincerely,</p><p>Poor Peter\'s AntAlmanac</p></html>'.format(code, names[code], house))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
         mail = Mail(from_email, subject, qa_email, content) #For quality assurance purposes
