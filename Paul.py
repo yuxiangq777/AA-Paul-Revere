@@ -57,9 +57,7 @@ print(double_check)
 
 for code, status in statuses.items():
     course_url = WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',code),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')])
-    if status is None:
-        msg = '<html><p>It seems that {} with code, {} ({}), has been cancelled!</p>'.format(names[code], code, course_url)
-    elif status == 'FULL' or status == 'NewOnly':
+    if status is None or status == 'FULL' or status == 'NewOnly':
         continue #keep waiting
     else:
         if status == 'Waitl':
