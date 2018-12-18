@@ -1,7 +1,7 @@
 import pymongo
 import os
-import urllib.request
 import urllib.parse
+import requests
 import bs4 as bs
 import sendgrid
 from sendgrid.helpers.mail import *
@@ -9,6 +9,8 @@ from sendgrid.helpers.mail import *
 TERM = '2019-03'
 WEBSOC = 'https://www.reg.uci.edu/perl/WebSoc?'
 BATCH_SIZE = 8
+
+HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
 sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 from_email = Email("AntAlmanac@gmail.com")
@@ -36,7 +38,8 @@ def fetch_statuses(targets):
         fields = [('YearTerm',TERM),('CourseCodes',', '.join(codes)),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')]
         url = WEBSOC + urllib.parse.urlencode(fields)
         print(url)
-        sp = bs.BeautifulSoup(urllib.request.urlopen(url), 'lxml')
+
+        sp = bs.BeautifulSoup(requests.get(url, headers=HEADERS).content, 'lxml')
 
         for row in sp.find_all('tr'):
             cells = row.find_all('td')
