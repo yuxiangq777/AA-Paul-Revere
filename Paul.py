@@ -39,7 +39,9 @@ def fetch_statuses(targets):
         url = WEBSOC + urllib.parse.urlencode(fields)
         print(url)
 
-        sp = bs.BeautifulSoup(requests.get(url, headers=HEADERS).content, 'lxml')
+        sauce = requests.get(url, headers=HEADERS).content
+        print(sauce)
+        sp = bs.BeautifulSoup(sauce, 'lxml')
 
         for row in sp.find_all('tr'):
             cells = row.find_all('td')
