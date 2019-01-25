@@ -1,12 +1,15 @@
 import pymongo
-import os
 import urllib.parse
 import requests
 import bs4 as bs
 import sendgrid
+import configparser
 from sendgrid.helpers.mail import *
 from fbchat import Client
 from fbchat.models import *
+
+config = configparser.ConfigParser()
+config.read('config.txt')
 
 TERM = '2019-03'
 WEBSOC = 'https://www.reg.uci.edu/perl/WebSoc?'
@@ -14,11 +17,11 @@ BATCH_SIZE = 8
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
-sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+sg = sendgrid.SendGridAPIClient(apikey=config['DEFAULT']['SENDGRID_API_KEY'])
 from_email = Email("AntAlmanac@gmail.com")
-qa_email = Email(os.environ.get('QA_EMAIL'))
+qa_email = Email(config['DEFAULT']['QA_EMAIL'])
 
-db = pymongo.MongoClient(os.environ.get('MONGODB_URI')).get_default_database()
+db = pymongo.MongoClient(config['DEFAULT']['MONGODB_URI']).get_default_database()
 emails, fbs, names = {}, {}, {}
 for course in db.queue.find():
     code = course['code']
@@ -79,7 +82,7 @@ for code, status in statuses.items():
         print(code)
 
     print('fbs')
-    client = Client(os.environ.get('USERNAME'), os.environ.get('PASSWORD'))
+    client = Client(config['DEFAULT']['USERNAME'], config['DEFAULT']['PASSWORD'])
     for fb in fbs[code]:
         client.send(Message(text='AntAlmanac Notifications!!'), thread_id=fb, thread_type=ThreadType.USER)
         client.send(Message(text=msg), thread_id=fb, thread_type=ThreadType.USER)
