@@ -5,6 +5,7 @@ from fbchat.models import *
 import pymongo
 import os
 import redis
+import json
 
 app = Flask(__name__)
 CORS(app)
