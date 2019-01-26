@@ -51,14 +51,14 @@ def add_fb(code, name, fb):
 # template route for AntAlmanac endpoint:
 @app.route("/fbmessenger/<code>/<name>/<fb>")
 def add_fb(code, name, fb):
-    if r.get(fb) == None: #first time
+    if r.get(fb) == None:
         r.set(fb,'f')
         client = Client(os.environ.get('USERNAME'), os.environ.get('PASSWORD'))
         try:
             client.send(Message(text='Hi! AntAlmanac here. This is to confirm that you just signed up for FB Messenger notifications. Please respond \"zot\" to this message or move this conversation so that you can get notified the next time we message. If you did not initiate this request, please ignore this message. Thank you!'),
                     thread_id=fb, thread_type=ThreadType.USER)
         except:
-        	payload = {"code":-1,"message":"{} is an invalid Facebook id!".format(fb)}
+            payload = {"code":-1,"message":"{} is an invalid Facebook id!".format(fb)}
             return json.dumps(payload)
 
         client.logout()
