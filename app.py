@@ -35,7 +35,8 @@ def add_fb(code, name, fb):
             client.send(Message(text='Hi! AntAlmanac here. This is to confirm that you just signed up for FB Messenger notifications. Please respond \"zot\" to this message or move this conversation so that you can get notified the next time we message. If you did not initiate this request, please ignore this message. Thank you!'),
                     thread_id=fb, thread_type=ThreadType.USER)
         except:
-            return '<html><body><h1 id=\"findme\">{} is an invalid Facebook id!</h1></body></html>'.format(fb)
+            #return '<html><body><h1 id=\"findme\">{} is an invalid Facebook id!</h1></body></html>'.format(fb)
+            return json.dumps({"message":"{} is an invalid Facebook id!".format(fb)})
         client.logout()
     doc = db["queue"].find_one({"code": code})
     if doc is None: #course not in db yet
