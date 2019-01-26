@@ -49,7 +49,7 @@ def add_fb(code, name, fb):
     return '<html><body><h1 id=\"findme\">{} has been added to the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
 
 # template route for AntAlmanac endpoint:
-@app.route("/api/facebook/<code>/<name>/<fb>")
+@app.route("/fbmessenger/<code>/<name>/<fb>")
 def add_fb(code, name, fb):
     if r.get(fb) == None: #first time
         r.set(fb,'f')
