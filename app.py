@@ -13,7 +13,7 @@ r = redis.from_url(os.environ.get('REDISCLOUD_URL'))
 
 @app.route("/email/<code>/<name>/<email>")
 def add_email(code, name, email):
-    if eval(r.get(email)) == None: #first time
+    if eval(r.get(email).decode('utf-8')) == None: #first time
         r.set(email,'e')
     doc = db["queue"].find_one({"code": code})
     if doc is None: #course not in db yet
@@ -27,7 +27,7 @@ def add_email(code, name, email):
 
 @app.route("/facebook/<code>/<name>/<fb>")
 def add_fb(code, name, fb):
-    if eval(r.get(fb)) == None: #first time
+    if eval(r.get(fb).decode('utf-8')) == None: #first time
         r.set(fb,'f')
         client = Client(os.environ.get('USERNAME'), os.environ.get('PASSWORD'))
         try:
