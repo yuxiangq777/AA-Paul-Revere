@@ -35,7 +35,9 @@ def add_fb(code, name, fb):
             client.send(Message(text='Hi! AntAlmanac here. This is to confirm that you just signed up for FB Messenger notifications. Please respond \"zot\" to this message or move this conversation so that you can get notified the next time we message. If you did not initiate this request, please ignore this message. Thank you!'),
                     thread_id=fb, thread_type=ThreadType.USER)
         except:
-            return '<html><body><h1 id=\"findme\">{} is an invalid Facebook id!</h1></body></html>'.format(fb)
+            payload = {"code":-1,"message":"{} is an invalid Facebook id!".format(fb)}
+            return json.dumps(payload)
+            #return '<html><body><h1 id=\"findme\">{} is an invalid Facebook id!</h1></body></html>'.format(fb)
             
         client.logout()
     doc = db["queue"].find_one({"code": code})
@@ -45,10 +47,14 @@ def add_fb(code, name, fb):
         doc["fbs"].append(fb)
         db["queue"].find_one_and_update({'_id': doc['_id']}, {"$set": doc})
     else: #already in the db
-        return '<html><body><h1 id=\"findme\">{} is already on the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
-    return '<html><body><h1 id=\"findme\">{} has been added to the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
+        payload = {"code":1,message":"{} "is already on the FB watchlist for {} {}".format(fb,code,name)}
+        return json.dumps(payload)
+        #return '<html><body><h1 id=\"findme\">{} is already on the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
+    #return '<html><body><h1 id=\"findme\">{} has been added to the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
+    payload = {"message":"{} has been added to the FB watchlist for {} {}".format(fb,code,name)}
+    return json.dumps(payload)
 
-
+'''
 @app.route("/fbook/<code>/<name>/<fb>")
 def almanacRout(code, name, fb):
     if r.get(fb) == None: #first time
@@ -74,3 +80,4 @@ def almanacRout(code, name, fb):
         return json.dumps(payload)
     payload = {"message":"{} has been added to the FB watchlist for {} {}".format(fb,code,name)}
     return json.dumps(payload)
+'''
