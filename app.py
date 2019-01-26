@@ -43,5 +43,7 @@ def add_fb(code, name, fb):
         doc["fbs"].append(fb)
         db["queue"].find_one_and_update({'_id': doc['_id']}, {"$set": doc})
     else: #already in the db
-        return '<html><body><h1 id=\"findme\">{} is already on the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
-    return '<html><body><h1 id=\"findme\">{} has been added to the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
+        #return '<html><body><h1 id=\"findme\">{} is already on the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
+        json.dumps({"message":"{} is already on the FB watchlist for {} {}".format(fb,code,name)})
+    #return '<html><body><h1 id=\"findme\">{} has been added to the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
+    json.dumps({"message":"{} has been added to the FB watchlist for {} {}".format(fb,code,name)})
