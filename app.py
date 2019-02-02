@@ -30,6 +30,7 @@ def add_email(code, name, email):
 def add_fb(user, code, name, fb):
     # if user is '1', then display page for users to see (in html)
     # if user is '0', then return json to non-user (the webapp)
+    first_timer = False
     if r.get(fb) == None: #first time
         r.set(fb,'f')
         first_timer = True
