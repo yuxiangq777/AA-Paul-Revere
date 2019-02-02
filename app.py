@@ -5,7 +5,7 @@ from fbchat.models import *
 import pymongo
 import os
 import redis
-import json
+from flask import jsonify
 
 app = Flask(__name__)
 CORS(app)
@@ -43,7 +43,7 @@ def add_fb(user, code, name, fb):
                 return '<html><body><h1 id=\"findme\">{} is an invalid Facebook id!</h1></body></html>'.format(fb)
             else:
                 payload = {"code":-1,"message":"{} is an invalid Facebook id!".format(fb)}
-                return json.dumps(payload)
+                return jsonify(payload)
 
         client.logout()
     doc = db["queue"].find_one({"code": code})
@@ -57,13 +57,13 @@ def add_fb(user, code, name, fb):
             return '<html><body><h1 id=\"findme\">{} is already on the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
         else:
             payload = {"code":1, "message":"{} is already on the FB watchlist for {} {}".format(fb,code,name)}
-            return json.dumps(payload)
+            return jsonify(payload)
 
     if str(user) == '1':
         return '<html><body><h1 id=\"findme\">{} has been added to the FB watchlist for {} {}!</h1></body></html>'.format(fb,code,name)
     elif first_timer: #implied coming from app
         payload = {"code":2, "message":"Please check your FB messenger inbox for a confirmation from Ant Almanac. This message might not appear in the primary inbox because it is from a non-friend and has been filtered by FB. {} has been added to the FB watchlist for {} {}".format(fb,code,name)}
-        return json.dumps(payload)
+        return jsonify(payload)
     else:
         payload = {"code":0, "message":"{} has been added to the FB watchlist for {} {}".format(fb,code,name)}
-        return json.dumps(payload)
+        return jsonify(payload)
