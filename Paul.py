@@ -17,11 +17,11 @@ BATCH_SIZE = 8
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
-sg = sendgrid.SendGridAPIClient(apikey=config['DEFAULT']['SENDGRID_API_KEY'])
+sg = sendgrid.SendGridAPIClient('REPLACE ME') ### REPLACE URI
 from_email = Email("AntAlmanac@gmail.com")
 qa_email = Email(config['DEFAULT']['QA_EMAIL'])
 
-db = pymongo.MongoClient(config['DEFAULT']['MONGODB_URI']).get_default_database()
+db = pymongo.MongoClient('REPLACE ME').get_default_database() ### REPLACE URI
 
 ## initialize variables...
 emails, fbs, names = {}, {}, {}
@@ -31,12 +31,41 @@ for course in db.queue.find():
     fbs[code] = course['fbs']
     names[code] = course['name']
 
+##helpers
+def fetch_statuses(targets):
+    statuses = {code:None for code in targets} #is statuses even a word in english? | initialize status values
+
+    iter = targets.__iter__()
+    for i in range(len(targets)//BATCH_SIZE + 1):
+        codes = set()
+        for _ in range(BATCH_SIZE):
+            try:
+                codes.add(next(iter))
+            except: #Expecting a StopIteration
+                break
+
+        # get status values for these codes
+        fields = [('YearTerm',TERM),('CourseCodes',', '.join(codes)),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')]
+        url = WEBSOC + urllib.parse.urlencode(fields)
+        print(url)
+
+        sp = bs.BeautifulSoup(requests.get(url, headers=HEADERS).content, 'lxml')
+
+        for row in sp.find_all('tr'):
+            cells = row.find_all('td')
+            if len(cells) > 14 and cells[0].text in statuses:
+                code = cells[0].text
+                statuses[code] = cells[-1].text
+
+    return statuses
+
 statuses = fetch_statuses(emails.keys())
 print(statuses)
 
 try: #log into fb
     client = Client(config['DEFAULT']['USERNAME'], config['DEFAULT']['PASSWORD'])
 except:
+    print('Can\'t log in')
     subject = "SOMETHING BAD JUST HAPPENED"
     content = Content("text/html",'Yo I can\'t log into FB to send notifications.')
     mail = Mail(from_email, subject, qa_email, content)
@@ -83,30 +112,3 @@ if client != None:
 
 
 
-##helpers
-def fetch_statuses(targets):
-    statuses = {code:None for code in targets} #is statuses even a word in english? | initialize status values
-
-    iter = targets.__iter__()
-    for i in range(len(targets)//BATCH_SIZE + 1):
-        codes = set()
-        for _ in range(BATCH_SIZE):
-            try:
-                codes.add(next(iter))
-            except: #Expecting a StopIteration
-                break
-
-        # get status values for these codes
-        fields = [('YearTerm',TERM),('CourseCodes',', '.join(codes)),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')]
-        url = WEBSOC + urllib.parse.urlencode(fields)
-        print(url)
-
-        sp = bs.BeautifulSoup(requests.get(url, headers=HEADERS).content, 'lxml')
-
-        for row in sp.find_all('tr'):
-            cells = row.find_all('td')
-            if len(cells) > 14 and cells[0].text in statuses:
-                code = cells[0].text
-                statuses[code] = cells[-1].text
-
-    return statuses
