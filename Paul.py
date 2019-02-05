@@ -17,11 +17,11 @@ BATCH_SIZE = 8
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
-sg = sendgrid.SendGridAPIClient('REPLACE ME') ### REPLACE URI
+sg = sendgrid.SendGridAPIClient('REPLACE') ### REPLACE URI
 from_email = Email("AntAlmanac@gmail.com")
 qa_email = Email(config['DEFAULT']['QA_EMAIL'])
 
-db = pymongo.MongoClient('REPLACE ME').get_default_database() ### REPLACE URI
+db = pymongo.MongoClient('REPLACE').get_default_database() ### REPLACE URI
 
 ## initialize variables...
 emails, fbs, names = {}, {}, {}
@@ -101,7 +101,7 @@ for code, status in statuses.items():
             client.send(Message(text='AntAlmanac Notifications!!'), thread_id=fb, thread_type=ThreadType.USER)
             client.send(Message(text=msg), thread_id=fb, thread_type=ThreadType.USER)
             client.send(Message(text='Here\'s WebReg while we\'re at it: https://www.reg.uci.edu/registrar/soc/webreg.html'), thread_id=fb, thread_type=ThreadType.USER)
-            client.send(Message(text='You have been removed from this watchlist; to add yourself again, please click on http://mediaont.herokuapp.com/facebook/1/{}/{}/{}'.format(code, names[code], house)), thread_id=fb, thread_type=ThreadType.USER)
+            client.send(Message(text='You have been removed from this watchlist; to add yourself again, please click on http://mediaont.herokuapp.com/facebook/1/{}/{}/{}'.format(code, names[code], fb)), thread_id=fb, thread_type=ThreadType.USER)
             client.send(Message(text='Also, was this notification correct? Were you able to add yourself? Please do let us know asap if there is anything that isn\'t working as it should be!!! https://goo.gl/forms/U8CuPs05DlIbrSfz2'), thread_id=fb, thread_type=ThreadType.USER)
             print(code)
 
