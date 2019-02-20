@@ -86,7 +86,7 @@ for code, status in statuses.items():
     print('sms')
     if client != None:
         for num in nums[code]:
-            sms_msg = 'AntAlmanac Notifications: ' + msg + 'WebReg(https://www.reg.uci.edu/registrar/soc/webreg.html).' + 'You have been removed from this watchlist; to add yourself again: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, names[code], num))
+            sms_msg = 'AntAlmanac Notifications: ' + msg + 'WebReg(https://www.reg.uci.edu/registrar/soc/webreg.html). ' + 'You have been removed from this watchlist; to add yourself again: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, names[code], num)
             message = client.messages.create(from_=config.FROM_NUMBER, body=sms_msg,to='+1'+num)
             print(code)
 
