@@ -40,10 +40,10 @@ def add_email(code, name, email):
         db["queue"].find_one_and_update({'_id': doc['_id']}, {"$set": doc})
     else: #already in the db
         msg = '{} was already on the email watchlist for {} {}!'.format(email,code,name)
-        return render_template("landing.html", img_link = "img/bg{}.jpg".format(lucky), message=msg, credits=CREDITS[lucky])
+        return render_template("landing.html", img_link = "https://www.ics.uci.edu/~rang1/PRL/bg_img/bg{}.jpg".format(lucky), message=msg, credits=CREDITS[lucky])
 
     msg = '{} has been added to the email watchlist for {} {}!</h1></body></html>'.format(email,code,name)
-    return render_template("landing.html", img_link = "img/bg{}.jpg".format(lucky), message=msg, credits=CREDITS[lucky])
+    return render_template("landing.html", img_link = "https://www.ics.uci.edu/~rang1/PRL/bg_img/bg{}.jpg".format(lucky), message=msg, credits=CREDITS[lucky])
 
 @app.route("/sms/<code>/<name>/<num>")
 def add_sms(code, name, num):
@@ -59,9 +59,9 @@ def add_sms(code, name, num):
         db["queue"].find_one_and_update({'_id': doc['_id']}, {"$set": doc})
     else: #already in the db
         msg = '{} was already on the sms watchlist for {} {}!'.format(num,code,name)
-        return render_template("landing.html", img_link = "img/bg{}.jpg".format(lucky), message=msg, credits=CREDITS[lucky])
+        return render_template("landing.html", img_link = "https://www.ics.uci.edu/~rang1/PRL/bg_img/bg{}.jpg".format(lucky), message=msg, credits=CREDITS[lucky])
     msg = '<html><body><h1 id=\"findme\">{} has been added to the sms watchlist for {} {}!</h1></body></html>'.format(num,code,name)
-    return render_template("landing.html", img_link = "img/bg{}.jpg".format(lucky), message=msg, credits=CREDITS[lucky])
+    return render_template("landing.html", img_link = "https://www.ics.uci.edu/~rang1/PRL/bg_img/bg{}.jpg".format(lucky), message=msg, credits=CREDITS[lucky])
 
 if __name__ == '__main__':
     app.debug = True

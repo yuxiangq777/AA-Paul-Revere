@@ -6,7 +6,7 @@
 	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 	<style>
 		body{
-			background-image: url({{ url_for('static', filename=img_link) }});
+			background-image: url({{ img_link }});
 			background-size: cover;
 		}
 		p{
@@ -50,6 +50,7 @@
 			padding: 7px;
 		}
 	</style>
+	<link rel="shortcut icon" href="https://www.ics.uci.edu/~rang1/PRL/icons/logo_icon_black.png">
 </head>
 
 <body>
@@ -61,12 +62,12 @@
 		<ul>
 			<li>
 				<a href="https://antalmanac.com/" target="_blank">
-					<img src="{{ url_for('static', filename='icons/logo_icon_black.png') }}" style="height:30px; width:50.8px">
+					<img src="https://www.ics.uci.edu/~rang1/PRL/icons/logo_icon_black.png" style="height:30px; width:50.8px">
 				</a>
 			</li>
 			<li>
 				<a href="https://www.facebook.com/AntAlmanac/" target="_blank">
-					<img src="{{ url_for('static', filename='icons/flogo-RGB-HEX-Blk-58.png') }}" style="height:30px; width:30px">
+					<img src="https://www.ics.uci.edu/~rang1/PRL/icons/flogo-RGB-HEX-Blk-58.png" style="height:30px; width:30px">
 				</a>
 			</li>
 		</ul>
