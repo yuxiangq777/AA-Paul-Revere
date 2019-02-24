@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>AntAlmanac Watchlist Confirmation</title>
+	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+	<style>
+		body{
+			background-image: url({{ url_for('static', filename=img_link) }});
+			background-size: cover;
+		}
+		p{
+			color: white;
+			font-family: 'Montserrat', sans-serif;
+			font-size: 45px;
+			text-align: center;
+		}
+		a{
+			color:white;
+		}
+		#credits{
+			font-size: 15px;
+			position: absolute;
+			right: 0px;
+			bottom: 0px;
+			margin: 20px;
+			text-align: right;
+		}
+		.container{
+		    position: fixed;
+		    top: 50%;
+		    left: 50%;
+		    transform: translate(-50%, -50%);
+		}
+		ul{
+			position: fixed;
+		    left: 50%;
+		    transform: translate(-50%);
+			margin-top: -20px;
+			padding: 1px;
+			padding-left: 10px;
+			padding-right: 10px;
+			background-color: rgba(255, 255, 255, 0.85);
+			border-radius: 15px;
+		}
+		li{
+			display: inline-block;
+			align-content: left;
+			text-align: center;
+			padding: 7px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<p>
+			{{ message|safe }}
+		</p>
+
+		<ul>
+			<li>
+				<a href="https://antalmanac.com/" target="_blank">
+					<img src="{{ url_for('static', filename='icons/logo_icon_black.png') }}" style="height:30px; width:50.8px">
+				</a>
+			</li>
+			<li>
+				<a href="https://www.facebook.com/AntAlmanac/" target="_blank">
+					<img src="{{ url_for('static', filename='icons/flogo-RGB-HEX-Blk-58.png') }}" style="height:30px; width:30px">
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<p id = "credits">
+		{{ credits|safe }}
+	</p>
+</body>
+
+</html>
