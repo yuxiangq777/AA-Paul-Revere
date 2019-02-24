@@ -26,6 +26,14 @@
 			margin: 20px;
 			text-align: right;
 		}
+		#submit{
+			font-size: 15px;
+			position: absolute;
+			left: 0px;
+			bottom: 0px;
+			margin: 20px;
+			text-align: left;
+		}
 		.container{
 		    position: fixed;
 		    top: 50%;
@@ -50,7 +58,7 @@
 			padding: 7px;
 		}
 	</style>
-	<link rel="shortcut icon" href="https://www.ics.uci.edu/~rang1/PRL/icons/logo_icon_black.png">
+	<link rel="shortcut icon" href="https://www.ics.uci.edu/~rang1/PRL/icons/favicon.png">
 </head>
 
 <body>
@@ -72,6 +80,11 @@
 			</li>
 		</ul>
 	</div>
+
+	<p id = "submit">
+		Want to see your photography here in the background? <br>
+		<a href="https://goo.gl/forms/LcTuUyaZqVxo2Scr2" target="_blank">Submit your photos here!</a>
+	</p>
 
 	<p id = "credits">
 		{{ credits|safe }}
