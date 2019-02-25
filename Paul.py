@@ -7,7 +7,7 @@ import config
 from twilio.rest import Client
 from sendgrid.helpers.mail import *
 
-TERM = '2019-03'
+TERM = '2019-14'
 WEBSOC = 'https://www.reg.uci.edu/perl/WebSoc?'
 BATCH_SIZE = 8
 
