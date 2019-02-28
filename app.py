@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from flask_cors import CORS
+import urllib
 import pymongo
 import config
 import random
@@ -28,6 +29,7 @@ CREDITS = [
 @app.route("/email/<code>/<name>/<email>")
 def add_email(code, name, email):
     lucky = random.randrange(0, len(CREDITS))
+    name = urllib.parse.unquote(name)
 
     if r.get(email) == None: #first time
         r.set(email,'e')
@@ -48,7 +50,7 @@ def add_email(code, name, email):
 @app.route("/sms/<code>/<name>/<num>")
 def add_sms(code, name, num):
     lucky = random.randrange(len(CREDITS))
-
+    name = urllib.parse.unquote(name)
     if r.get(num) == None: #first time
         r.set(num,'s')
     doc = db["queue"].find_one({"code": code})
