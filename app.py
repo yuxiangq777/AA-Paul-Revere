@@ -4,12 +4,10 @@ import urllib
 import pymongo
 import config
 import random
-import redis
 
 app = Flask(__name__)
 CORS(app)
 db = pymongo.MongoClient(config.MONGODB_URI).get_default_database()
-r = redis.from_url(config.REDISCLOUD_URL)
 
 CREDITS = [
     '''
@@ -23,6 +21,33 @@ CREDITS = [
     ''',
     '''
     Photo Credit: Calvin Harris Belcher
+    ''',
+    '''
+    Photo Credit: Benedict Chua
+    ''',
+    '''
+    Photo Credit: Benedict Chua
+    ''',
+    '''
+    Photo Credit: Benedict Chua
+    ''',
+    '''
+    Photo Credit: Benedict Chua
+    ''',
+    '''
+    Photo Credit: Benedict Chua
+    ''',
+    '''
+    Photo Credit: Benedict Chua
+    ''',
+    '''
+    Photo Credit: Benedict Chua
+    ''',
+    '''
+    Photo Credit: Benedict Chua
+    ''',
+    '''
+    Photo Credit: Benedict Chua
     '''
 ]
 
@@ -30,9 +55,6 @@ CREDITS = [
 def add_email(code, name, email):
     lucky = random.randrange(0, len(CREDITS))
     name = urllib.parse.unquote(name)
-
-    if r.get(email) == None: #first time
-        r.set(email,'e')
 
     doc = db["queue"].find_one({"code": code})
     if doc is None: #course not in db yet
@@ -51,8 +73,7 @@ def add_email(code, name, email):
 def add_sms(code, name, num):
     lucky = random.randrange(len(CREDITS))
     name = urllib.parse.unquote(name)
-    if r.get(num) == None: #first time
-        r.set(num,'s')
+
     doc = db["queue"].find_one({"code": code})
     if doc is None: #course not in db yet
         db["queue"].insert_one({"code": code, "name":name, "emails": [], "nums": [num]})
