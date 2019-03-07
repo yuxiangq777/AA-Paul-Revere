@@ -62,13 +62,15 @@ print(statuses)
 
 for code, status in statuses.items():
     course_url = WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',code),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')])
-    if status is None or status == 'FULL' or status == 'NewOnly':
+    if status is None:
+        msg = '{}. Code: {} ({}) has been cancelled'.format(names[code], code, course_url)
+    elif status == 'FULL' or status == 'NewOnly':
         continue #keep waiting
     else:
         if status == 'Waitl':
-            msg = 'Space opened up on the waitlist for {} with code, {} ({}). '.format(names[code], code, course_url)
+            msg = 'Space opened on waitlist for {}. Code: {} ({}). '.format(names[code], code, course_url)
         if status == 'OPEN':
-            msg = 'Space opened up in {} with code, {} ({}). '.format(names[code], code, course_url)
+            msg = 'Space opened in {}. Code: {} ({}). '.format(names[code], code, course_url)
 
     ##send email notifications
     print('emails')
@@ -86,7 +88,7 @@ for code, status in statuses.items():
     print('sms')
     if twilio != None:
         for num in nums[code]:
-            sms_msg = 'AntAlmanac Notifications: ' + msg + 'WebReg(https://www.reg.uci.edu/registrar/soc/webreg.html). ' + 'You have been removed from this watchlist; to add yourself again: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, names[code], num)
+            sms_msg = 'AntAlmanac: ' + msg + 'To add back to watchlist: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, names[code], num)
             message = client.messages.create(from_=config.FROM_NUMBER, body=sms_msg,to='+1'+num)
             print(code)
 
