@@ -4,6 +4,7 @@ import requests
 import bs4 as bs
 import sendgrid
 import config
+import urllib
 from twilio.rest import Client
 from sendgrid.helpers.mail import *
 
@@ -77,7 +78,7 @@ for code, status in statuses.items():
     for house in emails[code]:
         to_email = Email(house)
         subject = "[AntAlmanac Notifications] Space Just Opened Up"
-        content = Content("text/html",'<html><p>'+msg+'</p><p>Here\'s WebReg while we\'re at it: <a href="https://www.reg.uci.edu/registrar/soc/webreg.html" target="_blank">WebReg</a></p><p>You have been removed from this watchlist; to add yourself again, please visit <a href="https://antalmanac.com" target="_blank">AntAlmanac</a> or click on <a href="{}/email/{}/{}/{}" target="_blank">this link</a></p><p>Also, was this notification correct? Were you able to add yourself? Please do let us know asap if there is anything that isn\'t working as it should be!!! <a href="https://goo.gl/forms/U8CuPs05DlIbrSfz2" target="_blank">Give (anonymous) feedback!</a></p><p>Yours sincerely,</p><p>Poor Peter\'s AntAlmanac</p></html>'.format(config.BASE_URL, code, names[code], house))
+        content = Content("text/html",'<html><p>'+msg+'</p><p>Here\'s WebReg while we\'re at it: <a href="https://www.reg.uci.edu/registrar/soc/webreg.html" target="_blank">WebReg</a></p><p>You have been removed from this watchlist; to add yourself again, please visit <a href="https://antalmanac.com" target="_blank">AntAlmanac</a> or click on <a href="{}/email/{}/{}/{}" target="_blank">this link</a></p><p>Also, was this notification correct? Were you able to add yourself? Please do let us know asap if there is anything that isn\'t working as it should be!!! <a href="https://goo.gl/forms/U8CuPs05DlIbrSfz2" target="_blank">Give (anonymous) feedback!</a></p><p>Yours sincerely,</p><p>Poor Peter\'s AntAlmanac</p></html>'.format(config.BASE_URL, code, urllib.parse.quote(names[code]), house))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
         mail = Mail(from_email, subject, qa_email, content) #For quality assurance purposes
@@ -88,7 +89,7 @@ for code, status in statuses.items():
     print('sms')
     if twilio != None:
         for num in nums[code]:
-            sms_msg = 'AntAlmanac: ' + msg + 'To add back to watchlist: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, names[code], num)
+            sms_msg = 'AntAlmanac: ' + msg + 'To add back to watchlist: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, urllib.parse.quote(names[code]), num)
             message = twilio.messages.create(from_=config.FROM_NUMBER, body=sms_msg,to='+1'+num)
             print(code)
 
