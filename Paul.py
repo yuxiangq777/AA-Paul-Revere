@@ -5,7 +5,6 @@ import bs4 as bs
 import sendgrid
 import config
 import urllib
-from twilio.rest import Client
 from sendgrid.helpers.mail import *
 import boto3
 
@@ -23,7 +22,6 @@ aws = boto3.client(
 # initialize senders
 while 1:
     print("run")
-    twilio = Client(config.ACCOUNT_SID, config.AUTH_TOKEN)
     sg = sendgrid.SendGridAPIClient(config.SENDGRID_API_KEY)
     from_email = Email("AntAlmanac@gmail.com")
     qa_email = Email(config.QA_EMAIL)
@@ -101,7 +99,6 @@ while 1:
             for num in nums[code]:
                 try:
                     sms_msg = 'AntAlmanac: ' + msg + 'To add back to watchlist: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, urllib.parse.quote(names[code]), num)
-                    #message = twilio.messages.create(from_=config.FROM_NUMBER, body=sms_msg,to='+1'+num)
                     aws.publish(
                         PhoneNumber="+1"+num,
                         Message=sms_msg
