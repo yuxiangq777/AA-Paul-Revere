@@ -67,15 +67,16 @@ while 1:
         return statuses
 
     statuses = fetch_statuses(emails.keys())
-    #print(statuses)
+#    print(statuses)
 
     for code, status in statuses.items():
-        course_url = WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',code),('ShowFinals',0),('ShowComments',0),('CancelledCourses','Include')])
         if status is None:
+            course_url = WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',code),('CancelledCourses','Include')])
             msg = '{}. Code: {} ({}) has been cancelled'.format(names[code], code, course_url)
         elif status == 'FULL' or status == 'NewOnly':
             continue #keep waiting
         else:
+            course_url = WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',code)])
             if status == 'Waitl':
                 msg = 'Space opened on waitlist for {}. Code: {} ({}). '.format(names[code], code, course_url)
             if status == 'OPEN':
@@ -89,6 +90,7 @@ while 1:
             content = Content("text/html",'<html><p>'+msg+'</p><p>Here\'s WebReg while we\'re at it: <a href="https://www.reg.uci.edu/registrar/soc/webreg.html" target="_blank">WebReg</a></p><p>You have been removed from this watchlist; to add yourself again, please visit <a href="https://antalmanac.com" target="_blank">AntAlmanac</a> or click on <a href="{}/email/{}/{}/{}" target="_blank">this link</a></p><p>Also, was this notification correct? Were you able to add yourself? Please do let us know asap if there is anything that isn\'t working as it should be!!! <a href="https://goo.gl/forms/U8CuPs05DlIbrSfz2" target="_blank">Give (anonymous) feedback!</a></p><p>Yours sincerely,</p><p>Poor Peter\'s AntAlmanac</p></html>'.format(config.BASE_URL, code, urllib.parse.quote(names[code]), house))
             mail = Mail(from_email, subject, to_email, content)
             response = sg.client.mail.send.post(request_body=mail.get())
+            content = Content("text/html",'<html><p>'+msg+'</p><p>Here\'s WebReg while we\'re at it: <a href="https://www.reg.uci.edu/registrar/soc/webreg.html" target="_blank">WebReg</a></p><p>You have been removed from this watchlist; to add yourself again, please visit <a href="https://antalmanac.com" target="_blank">AntAlmanac</a> or click on {}/email/{}/{}/{}</p><p>Also, was this notification correct? Were you able to add yourself? Please do let us know asap if there is anything that isn\'t working as it should be!!! <a href="https://goo.gl/forms/U8CuPs05DlIbrSfz2" target="_blank">Give (anonymous) feedback!</a></p><p>Yours sincerely,</p><p>Poor Peter\'s AntAlmanac</p></html>'.format(config.BASE_URL, code, urllib.parse.quote(names[code]), house))
             mail = Mail(from_email, subject, qa_email, content) #For quality assurance purposes
             response = sg.client.mail.send.post(request_body=mail.get()) #For quality assurance
             #print(code)
@@ -97,17 +99,26 @@ while 1:
         print('sms')
         if aws != None:
             for num in nums[code]:
-               
-                sms_msg = 'AntAlmanac: ' + msg + 'To add back to watchlist: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, urllib.parse.quote(names[code]), num)
-                #message = twilio.messages.create(from_=config.FROM_NUMBER, body=sms_msg,to='+1'+num)
-                aws.publish(
-                     PhoneNumber="+1"+num,
-                    Message=sms_msg
-                    )
-                print("sms")
-                print(code)
-                print(num)
-                print("smsssss")
+                try:
+                    sms_msg = 'AntAlmanac: ' + msg + 'To add back to watchlist: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, urllib.parse.quote(names[code]), num)
+                    #message = twilio.messages.create(from_=config.FROM_NUMBER, body=sms_msg,to='+1'+num)
+                    aws.publish(
+                        PhoneNumber="+1"+num,
+                        Message=sms_msg
+                        )
+                    subject = "[AntAlmanac Notifications] SMS CC"
+                    content = Content("text/html",sms_msg)
+                    mail = Mail(from_email, subject, qa_email, content) #For quality assurance purposes
+                    response = sg.client.mail.send.post(request_body=mail.get()) #For quality assurance
+                    print("sms")
+                    print(code)
+                    print(num)
+                    print()
+                except:
+                    subject = "[AntAlmanac ERROR] SMS Hit the Fan"
+                    content = Content("text/html",'SOMETHING WENT WRONG:   '+sms_msg)
+                    mail = Mail(from_email, subject, qa_email, content) #For quality assurance purposes
+                    response = sg.client.mail.send.post(request_body=mail.get()) #For quality assurance
 
 
         db.queue.delete_one({"code": str(code)})
