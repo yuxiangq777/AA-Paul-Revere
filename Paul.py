@@ -10,6 +10,7 @@ import boto3
 
 TERM = '2019-14'
 WEBSOC = 'https://www.reg.uci.edu/perl/WebSoc?'
+TINYURL="http://tinyurl.com/api-create.php"
 BATCH_SIZE = 8
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
@@ -70,11 +71,15 @@ while 1:
     for code, status in statuses.items():
         if status is None:
             course_url = WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',code),('CancelledCourses','Include')])
+            res = requests.get(TINYURL+"?"+urllib.parse.urlencode({"url": course_url}))
+            course_url= res.text
             msg = '{}. Code: {} ({}) has been cancelled'.format(names[code], code, course_url)
         elif status == 'FULL' or status == 'NewOnly':
             continue #keep waiting
         else:
             course_url = WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',code)])
+            res = requests.get(TINYURL+"?"+urllib.parse.urlencode({"url": course_url}))
+            course_url= res.text
             if status == 'Waitl':
                 msg = 'Space opened on waitlist for {}. Code: {} ({}). '.format(names[code], code, course_url)
             if status == 'OPEN':
@@ -98,7 +103,10 @@ while 1:
         if aws != None:
             for num in nums[code]:
                 try:
-                    sms_msg = 'AntAlmanac: ' + msg + 'To add back to watchlist: {}/sms/{}/{}/{}'.format(config.BASE_URL, code, urllib.parse.quote(names[code]), num)
+                    watch_url = "{}/sms/{}/{}/{}".format(config.BASE_URL, code, urllib.parse.quote(names[code]), num)
+                    watch_res = requests.get(TINYURL+"?"+urllib.parse.urlencode({"url": watch_url}))
+                    watch_url= watch_res.text
+                    sms_msg = 'AntAlmanac: ' + msg + 'To add back to watchlist: {}'.format(watch_url)
                     aws.publish(
                         PhoneNumber="+1"+num,
                         Message=sms_msg
