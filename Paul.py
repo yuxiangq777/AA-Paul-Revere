@@ -90,7 +90,7 @@ while 1:
         else:
             course_url = shorten(WEBSOC + urllib.parse.urlencode([('YearTerm',TERM),('CourseCodes',code)])) # shorten the course_url
             if status == 'Waitl':
-                msg = 'Space opened on waitlist for {}. Code: {} ({}). '.format(names[code], code, course_url)
+                msg = 'Waitlist opened for {}. Code: {} ({}). '.format(names[code], code, course_url)
             if status == 'OPEN':
                 msg = 'Space opened in {}. Code: {} ({}). '.format(names[code], code, course_url)
 
