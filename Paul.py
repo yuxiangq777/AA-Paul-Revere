@@ -29,7 +29,7 @@ def shorten(long_url):
         res = requests.get(url)
         # print("LONG URL:", long_url) # original url
         # print("SHORT URL:", res.text) # shortened version
-        return res.text # return shorten url
+        return res.text if len(res.text)<50 else long_url # return shorten url
     except Exception as e:
         return long_url # if unable to get shorten url, just return back the long one
 
